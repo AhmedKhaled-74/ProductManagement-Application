@@ -1,0 +1,36 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+### Get all products
+GET https://localhost:7273/api/v1/Products/all?pageNum=1&role=user&region=egypt
+Accept: application/json
+
+### Get filtered products
+GET https://localhost:7273/api/v1/Products/filtered?orderBy=Price&filter=Pro&minPrice=100&maxPrice=2990&pageNum=1&role=user&region=egypt
+Accept: application/json
+
+### Get product by Id
+GET https://localhost:7273/api/v1/Products/41519832-6229-4397-aa4a-e6ddafb23fe7?region=egypt
+Accept: application/json
+
+### a4717148-35bc-4789-e6e7-08ddf0c5bb06
+### a491b7eb-a321-48fa-0009-08ddf085f290
+### Create new Product
+POST https://localhost:7273/api/v1/Products/New-Product
+Content-Type: application/json
+Accept: application/json
+
+{
+  "productName": "afterMicroUser-Product",
+  "productDescription": "A simple product description",
+  "productMass": 1.5,
+  "productVolume": 0.5,
+  "productPrice": 149.99,
+  "vendorId": "a4717148-35bc-4789-e6e7-08ddf0c5bb06",
+  "productCategoryId": "9ce2a93c-ffb4-4ef1-bbe4-a1a2d4629766",
+  "numberOfAddingProducts": 50,
+  "productMediaAddRequests": [
+    {
+      "type": "image",
+      "productMediaURL": "https://example.com/product-image.jpg"
+    }
+  ]
+}

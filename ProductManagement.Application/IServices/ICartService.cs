@@ -1,0 +1,23 @@
+﻿using ErrorOr;
+using ProductManagement.Application.DTOs.CartDTOs;
+using ProductManagement.Application.Helpers;
+using ProductManagement.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ProductManagement.Application.IServices
+{
+    public interface ICartService
+    {
+        Task<ErrorOr<CartProductDTO>> AddProductToCart(Guid? ProductId,int? Quantity,Guid? userId, PriceConstsSetup? priceConstsSetup);
+        Task<ErrorOr<Success>> UpdateCart(Guid? ProductId, int? Quantity, Guid? cartId);
+        Task<ErrorOr<Success>> RemoveProductFromCart(Guid? ProductId, Guid? cartId);
+        Task<ErrorOr<Success>> ClearCart(Guid? cartId);
+        Task<ErrorOr<CartDTO>> GetCartByIds(Guid? userId, Guid? cartId, PriceConstsSetup? priceConstsSetup);
+        Task<ErrorOr<CartDTO>> GetCartByUserId(Guid? userId, PriceConstsSetup? priceConstsSetup);
+
+    }
+}
