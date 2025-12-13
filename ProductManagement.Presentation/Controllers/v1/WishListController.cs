@@ -59,5 +59,20 @@ namespace ProductManagement.Presentation.Controllers.v1
                 errors => Problem(errors)
             );
         }
+
+        /// <summary>
+        /// method to clear wish list
+        /// </summary>
+        /// <param name="wishListId"></param>
+        /// <returns></returns>
+        [HttpDelete("wishlist/{wishListId}/clear")]
+        public async Task<IActionResult> ClearWishList(Guid? wishListId)
+        {
+            var result = await _wishListService.ClearWishListAsync(wishListId);
+            return result.Match(
+                success => Ok(),
+                errors => Problem(errors)
+            );
+        }
     }
 }

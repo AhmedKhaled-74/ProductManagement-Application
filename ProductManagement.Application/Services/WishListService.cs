@@ -54,5 +54,14 @@ namespace ProductManagement.Application.Services
             await _wishListSettersRepo.RemoveProductFromWishListAsync(userId.Value, productId.Value);
             return Result.Success;
         }
+        public async Task<ErrorOr<Success>> ClearWishListAsync(Guid? wishListId)
+        {
+            if (wishListId == null)
+            {
+                return Errors.Errors.WishListErrors.WishListObjectRequired;
+            }
+            await _wishListSettersRepo.ClearWishList(wishListId.Value);
+            return Result.Success;
+        }
     }
 }

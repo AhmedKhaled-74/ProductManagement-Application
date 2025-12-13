@@ -57,5 +57,18 @@ namespace ProductManagement.Infrastructure.Repos.WishListRepos
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task ClearWishList(Guid wishListId)
+        {
+            var wishList = await _dbContext.WhishLists
+                .Include(wl => wl.WhishListProducts)
+                .FirstOrDefaultAsync(wl => wl.WhishListId == wishListId);
+            if (wishList != null && wishList.WhishListProducts != null)
+                {
+                _dbContext.WhishListProducts.RemoveRange(wishList.WhishListProducts);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
     }
 }

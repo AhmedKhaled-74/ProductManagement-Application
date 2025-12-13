@@ -10,5 +10,6 @@ namespace ProductManagement.Application.RepoContracts.IWishListRepos
     {
         Task AddProductToWishListAsync(Guid userId, Guid productId);
         Task RemoveProductFromWishListAsync(Guid userId, Guid productId);
+        Task ClearWishList(Guid wishListId);
     }
 }
