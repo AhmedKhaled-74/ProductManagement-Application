@@ -26,6 +26,8 @@ namespace ProductManagement.Domain.Entities
         public decimal Discount { get; set; }
         public int TotalRatedUsers { get; set; }
         public int TotalStars { get; set; }
+        public bool IsApproved { get; set; } = false;
+        public DateTime CreatedAt { get;} = DateTime.UtcNow;
 
 
         // navigation props

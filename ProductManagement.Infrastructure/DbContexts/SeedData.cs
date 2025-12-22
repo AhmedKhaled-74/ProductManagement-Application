@@ -137,7 +137,8 @@ namespace ProductManagement.Infrastructure.DbContexts
                     SoldTimes = 150,
                     Discount = 0.1m, // 10% discount
                     TotalRatedUsers = 45,
-                    TotalStars = 215
+                    TotalStars = 215,
+                    IsApproved = true
                 },
                 new Product
                 {
@@ -155,7 +156,8 @@ namespace ProductManagement.Infrastructure.DbContexts
                     SoldTimes = 80,
                     Discount = 0.05m, // 5% discount
                     TotalRatedUsers = 32,
-                    TotalStars = 152
+                    TotalStars = 152,
+                    IsApproved = true
                 },
                 new Product
                 {
@@ -173,7 +175,8 @@ namespace ProductManagement.Infrastructure.DbContexts
                     SoldTimes = 300,
                     Discount = 0.15m, // 15% discount
                     TotalRatedUsers = 67,
-                    TotalStars = 321
+                    TotalStars = 321,
+                    IsApproved = true
                 },
                 new Product
                 {
@@ -191,7 +194,9 @@ namespace ProductManagement.Infrastructure.DbContexts
                     SoldTimes = 200,
                     Discount = 0.0m,
                     TotalRatedUsers = 89,
-                    TotalStars = 425
+                    TotalStars = 425,
+                    IsApproved = true
+
                 },
                 new Product
                 {
@@ -208,7 +213,8 @@ namespace ProductManagement.Infrastructure.DbContexts
                     SoldTimes = 180,
                     Discount = 0.2m, // 20% discount
                     TotalRatedUsers = 54,
-                    TotalStars = 256
+                    TotalStars = 256,
+                    IsApproved = true
                 }
             };
 
@@ -377,8 +383,6 @@ namespace ProductManagement.Infrastructure.DbContexts
                         ReviewId = Guid.NewGuid(),
                         UserId = Guid.NewGuid(),
                         ProductId = product.ProductId,
-                        Likes = random.Next(0, 50),
-                        Dislikes = random.Next(0, 10),
                         FeedBackCreatedAt = DateTime.UtcNow.AddDays(-random.Next(1, 90)),
                         FeedBack = $"Great product! Exceeded my expectations. This is review #{i + 1} for {product.ProductName}",
                         Rate = random.Next(3, 6) // Ratings between 3-5

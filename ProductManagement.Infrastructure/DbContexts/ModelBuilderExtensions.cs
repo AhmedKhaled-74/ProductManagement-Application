@@ -94,6 +94,8 @@ namespace ProductManagement.Infrastructure.DbContexts
                 entity.Property(p => p.TotalStars)
                     .HasDefaultValue(0);
 
+                entity.HasQueryFilter(p => p.IsApproved);
+
             });
 
             modelBuilder.Entity<Cart>(entity =>

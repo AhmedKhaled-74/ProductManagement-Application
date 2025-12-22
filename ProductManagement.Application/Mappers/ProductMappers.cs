@@ -114,6 +114,20 @@ namespace ProductManagement.Application.Mappers
 
             return productResult;
         }
+        public static ProductVendorResult ToProductVendorResult(this Product product)
+        {
+            var productResult = product.Adapt<ProductVendorResult>();
+
+            productResult.BrandName = product.ProductBrand?.BrandName;
+            productResult.ProductCategoryName = product.ProductCategory.CategoryName;
+            productResult.ProductSubCategoryName = product.ProductSubCategory?.SubCategoryName;
+            productResult.IconUrl = product.ProductMedias.FirstOrDefault()!.ProductMediaURL;
+            productResult.Rate = product.TotalRatedUsers > 0
+                ? Math.Round(((decimal)product.TotalStars / (product.TotalRatedUsers * 5)) * 5, 1)
+                : 0;
+
+            return productResult;
+        }
 
         // 🔹 Product → Detailed Result
         public static ProductDetailedResult ToProductDetailedResult(this Product product, PriceConstsSetup priceConsts)

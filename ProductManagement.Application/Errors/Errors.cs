@@ -34,6 +34,28 @@ namespace ProductManagement.Application.Errors
 
             
         }
+        public static class ReviewErrors
+        {
+            public static Error ReviewNotFound => Error.NotFound(code: "Review.NotFound",
+                description: "Review with this Id Notfound"
+                );
+            public static Error ReviewIdRequired => Error.Validation(code: "Review.IdRequired",
+                description: "ReviewId is Required"
+                );
+            public static Error ReviewObjectRequired => Error.Validation(code: "Review.ObjectRequired",
+                 description: "Object is Required"
+                );
+            public static Error UserNotFound => Error.NotFound(code: "Review.UserNotFound",
+                 description: "User is not found"
+                );
+            public static Error UserAlreadyReviewed => Error.Conflict(code: "Review.UserAlreadyReviewed",
+                 description: "User is Already Reviewed"
+                );
+            public static Error NotTheOwner => Error.Conflict(code: "Review.NotTheOwner",
+                 description: "User is Not The Owner"
+                );
+
+        }
         public static class RegionErrors
         {
             public static Error RegionNotFound => Error.NotFound(code: "Region.NotFound",
@@ -91,6 +113,9 @@ namespace ProductManagement.Application.Errors
             public static Error VendorDoesntHaveBrandAuthorize => Error.Conflict(code: "Vendor.VendorDoesntHaveBrandAuthorize",
                 description: "Vendor with this id doesnt have this brand authorize"
                 );
+            public static Error VendorDoesntHaveProductAuthorize => Error.Conflict(code: "Vendor.VendorDoesntHaveProductAuthorize",
+                description: "Vendor with this id doesnt have this product authorize"
+                );
         }
         public static class CartErrors
         {
@@ -136,6 +161,14 @@ namespace ProductManagement.Application.Errors
 
 
         }
+        public static class AdminErrors
+        {
+            public static Error UserIsNotAdmin => Error.NotFound(code: "Admin.UserIsNotAdmin",
+                description: "User with this Id Is Not Admin"
+                );
+            
+        }
+
 
     }
 }
