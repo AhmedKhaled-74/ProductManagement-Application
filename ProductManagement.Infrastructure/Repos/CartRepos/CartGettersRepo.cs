@@ -23,5 +23,12 @@ namespace ProductManagement.Infrastructure.Repos.CartRepos
         {
             return await _dbContext.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
         }
+        public async Task<List<CartProduct>> GetSearchedProductsInCartAsync(Guid cartId, string searchFor)
+        {
+            return await _dbContext.CartProducts
+                .Include(cp => cp.Product)
+                .Where(cp => cp.CartId == cartId && (cp.Product.ProductName.Contains(searchFor) || cp.Product.ProductDescription.Contains(searchFor)))
+                .ToListAsync();
+        }
     }
 }

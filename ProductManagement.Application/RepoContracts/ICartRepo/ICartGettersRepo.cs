@@ -12,6 +12,7 @@ namespace ProductManagement.Application.RepoContracts.ICartRepo
         // Define methods for getting cart data here
         Task<Cart?> GetCartByIdsAsync(Guid userId , Guid cartId);
         Task<Cart?> GetCartByUserIdAsync(Guid userId);
+        Task<List<CartProduct>> GetSearchedProductsInCartAsync(Guid cartId , string searchFor);
 
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductManagement.Infrastructure.DbContexts;
 
@@ -11,9 +12,11 @@ using ProductManagement.Infrastructure.DbContexts;
 namespace ProductManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251231024922_Product Entity props fix")]
+    partial class ProductEntitypropsfix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,10 +78,6 @@ namespace ProductManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.CartProduct", b =>
                 {
-                    b.Property<Guid>("CartProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CartId")
                         .HasColumnType("uniqueidentifier");
 
@@ -88,28 +87,11 @@ namespace ProductManagement.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("CartProductId");
-
-                    b.HasIndex("CartId");
+                    b.HasKey("CartId", "ProductId");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartProducts");
-                });
-
-            modelBuilder.Entity("ProductManagement.Domain.Entities.CartProductCustomAttribute", b =>
-                {
-                    b.Property<Guid>("ProductCustomAttributeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CartProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProductCustomAttributeId", "CartProductId");
-
-                    b.HasIndex("CartProductId");
-
-                    b.ToTable("CartProductCustomAttribute");
                 });
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.Category", b =>
@@ -405,25 +387,6 @@ namespace ProductManagement.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProductManagement.Domain.Entities.CartProductCustomAttribute", b =>
-                {
-                    b.HasOne("ProductManagement.Domain.Entities.CartProduct", "CartProduct")
-                        .WithMany("CartProductCustomAttributes")
-                        .HasForeignKey("CartProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProductManagement.Domain.Entities.ProductCustomAttribute", "ProductCustomAttribute")
-                        .WithMany()
-                        .HasForeignKey("ProductCustomAttributeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CartProduct");
-
-                    b.Navigation("ProductCustomAttribute");
-                });
-
             modelBuilder.Entity("ProductManagement.Domain.Entities.Product", b =>
                 {
                     b.HasOne("ProductManagement.Domain.Entities.Brand", "ProductBrand")
@@ -528,11 +491,6 @@ namespace ProductManagement.Infrastructure.Migrations
             modelBuilder.Entity("ProductManagement.Domain.Entities.Cart", b =>
                 {
                     b.Navigation("CartProducts");
-                });
-
-            modelBuilder.Entity("ProductManagement.Domain.Entities.CartProduct", b =>
-                {
-                    b.Navigation("CartProductCustomAttributes");
                 });
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.Category", b =>

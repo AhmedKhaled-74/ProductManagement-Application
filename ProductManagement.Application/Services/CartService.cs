@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using Microsoft.Extensions.Options;
 using ProductManagement.Application.DTOs.CartDTOs;
 using ProductManagement.Application.Helpers;
 using ProductManagement.Application.IServices;
@@ -17,7 +18,7 @@ namespace ProductManagement.Application.Services
         private readonly ICartGettersRepo _cartGettersRepo = cartGettersRepo;
         private readonly ICartSettersRepo _cartSettersRepo = cartSettersRepo;
 
-        public async Task<ErrorOr<CartProductDTO>> AddProductToCart(Guid? ProductId, int? Quantity, Guid? userId , PriceConstsSetup? priceConstsSetup)
+        public async Task<ErrorOr<CartProductDTO>> AddProductToCart(Guid? ProductId, List<Guid>? customAttIds,int? Quantity, Guid? userId , PriceConstsSetup? priceConstsSetup)
         {
             if (ProductId is null || userId is null || priceConstsSetup is null || Quantity is null)
             {
@@ -28,7 +29,12 @@ namespace ProductManagement.Application.Services
             {
                  await _cartSettersRepo.CreateCart(userId.Value);
             }
-            var result = await  _cartSettersRepo.AddProductToCart(ProductId.Value, Quantity.Value, userId.Value);
+            cart = await _cartGettersRepo.GetCartByUserIdAsync(userId.Value);
+            if (cart is null)
+            {
+                return Errors.Errors.CartErrors.CartNotFound;
+            }
+            var result = await  _cartSettersRepo.AddProductToCart(ProductId.Value, customAttIds, Quantity.Value, cart.CartId);
             if (result is null)
             {
                 return Errors.Errors.CartErrors.FailedToAddProductToCart;
@@ -45,6 +51,18 @@ namespace ProductManagement.Application.Services
             }
             await _cartSettersRepo.ClearCart(cartId.Value);
             return Result.Success;
+        }
+
+        public async Task<ErrorOr<List<CartProductDTO>>> SearchProductInCart(Guid? cartId, string? searchFor, PriceConstsSetup? priceConstsSetup)
+        {
+            if (cartId is null || string.IsNullOrEmpty(searchFor) || priceConstsSetup is null)
+            {
+                return Errors.Errors.CartErrors.CartObjectRequired;
+            }
+            var productsInCart = await _cartGettersRepo.GetSearchedProductsInCartAsync(cartId.Value, searchFor);
+
+            var productsDTOs = productsInCart.Select(p => p.ToCartProductDTO(priceConstsSetup)).ToList();
+            return productsDTOs;
         }
 
         public async Task<ErrorOr<CartDTO>> GetCartByIds(Guid? userId,Guid? cartId,PriceConstsSetup? priceConstsSetup)
@@ -85,13 +103,13 @@ namespace ProductManagement.Application.Services
             return Result.Success;
         }
 
-        public async  Task<ErrorOr<Success>> UpdateCart(Guid? ProductId, int? Quantity, Guid? cartId)
+        public async  Task<ErrorOr<Success>> UpdateCart(Guid? CartProductId, List<Guid>? CustomAttributesIds , int? Quantity)
         {
-            if (ProductId is null || cartId is null || Quantity is null)
+            if (CartProductId is null || Quantity is null)
             {
                 return Errors.Errors.CartErrors.CartObjectRequired;
             }
-            var result = await _cartSettersRepo.UpdateCart(ProductId.Value, Quantity.Value, cartId.Value);
+            var result = await _cartSettersRepo.UpdateCart(CartProductId.Value, CustomAttributesIds,Quantity.Value);
             if (result is null)
             {
                 return Errors.Errors.CartErrors.FailedToUpdateCart;

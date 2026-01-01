@@ -31,7 +31,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost("{productId}/approve")]
-        public async Task<IActionResult> ApproveProduct([FromRoute][Required] Guid productId, [FromBody][Required] Guid userId)
+        public async Task<IActionResult> ApproveProduct([FromRoute][Required] Guid productId, [FromQuery][Required] Guid userId)
         {
             var command = new ApproveProductCommand(productId, userId);
             var result = await _mediator.Send(command);
@@ -49,7 +49,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("{productId}/admin")]
-        public async Task<IActionResult> DeleteProduct([FromRoute][Required] Guid productId, [FromBody][Required] Guid userId)
+        public async Task<IActionResult> DeleteProduct([FromRoute][Required] Guid productId, [FromQuery][Required] Guid userId)
         {
             var command = new DeleteProductCommand(productId, userId);
             var result = await _mediator.Send(command);
@@ -67,7 +67,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("custom-attribute/{customAttributeId}/admin")]
-        public async Task<IActionResult> DeleteCustomAttribute([FromRoute][Required] Guid customAttributeId, [FromBody][Required] Guid userId)
+        public async Task<IActionResult> DeleteCustomAttribute([FromRoute][Required] Guid customAttributeId, [FromQuery][Required] Guid userId)
         {
             var command = new DeleteProductCustomAttributeCommand(customAttributeId, userId);
             var result = await _mediator.Send(command);
@@ -85,7 +85,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("product-media/{productMediaId}/admin")]
-        public async Task<IActionResult> DeleteProductMedia([FromRoute][Required] Guid productMediaId, [FromBody][Required] Guid userId)
+        public async Task<IActionResult> DeleteProductMedia([FromRoute][Required] Guid productMediaId, [FromQuery][Required] Guid userId)
         {
             var command = new DeleteProductMediaCommand(productMediaId, userId);
             var result = await _mediator.Send(command);
@@ -103,7 +103,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("review/{reviewId}/admin")]
-        public async Task<IActionResult> DeleteProductReview([FromRoute][Required] Guid reviewId, [FromBody][Required] Guid userId)
+        public async Task<IActionResult> DeleteProductReview([FromRoute][Required] Guid reviewId, [FromQuery][Required] Guid userId)
         {
             var command = new DeleteProductReviewCommand(reviewId, userId);
             var result = await _mediator.Send(command);
@@ -121,7 +121,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="pageNum"></param>
         /// <returns></returns>
         [HttpGet("unapproved/{pageNum:int?}")]
-        public async Task<IActionResult> GetUnapprovedProducts([FromBody][Required] Guid userId, [FromQuery] int? pageNum)
+        public async Task<IActionResult> GetUnapprovedProducts([FromQuery][Required] Guid userId, [FromQuery] int? pageNum)
         {
             var query = new GetUnapprovedProductsQuery(pageNum, userId);
             var result = await _mediator.Send(query);

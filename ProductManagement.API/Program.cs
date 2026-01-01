@@ -8,8 +8,10 @@ using ProductManagement.Infrastructure.DbContexts;
 using ProductManagement.Infrastructure.Repos;
 using ProductManagement.Infrastructure.Repos.ProductRepos;
 using ProductManagement.Presentation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddPresentation()
                 .AddApplication(builder.Configuration)
@@ -18,10 +20,17 @@ builder.Services.AddPresentation()
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi().ExcludeFromDescription();
+app.MapScalarApiReference(options =>
 {
-    app.MapOpenApi();
-}
+    options
+        .WithTitle("Product Management API")
+        .WithTheme(ScalarTheme.BluePlanet)
+        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);        
+});
+
+
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -37,6 +46,9 @@ else
 {
     app.UseExceptionHandler("/error"); // the one above
 }
+app.UseStaticFiles();
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

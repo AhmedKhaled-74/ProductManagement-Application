@@ -96,7 +96,7 @@ namespace ProductManagement.Infrastructure.Repos.ProductRepos.User
                 .Include(p => p.Vendor)
                 .Include(p => p.ProductMedias)
                 .AsQueryable();
-            query = query.Where(p => p.Discount > 15);
+            query = query.Where(p => p.Discount > 0.15m);
             return await query.OrderByDescending(p => p.Discount)
                 .Take(5)
                 .ToListAsync();

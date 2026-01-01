@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using ProductManagement.Application.Helpers;
 using ProductManagement.Application.IServices;
+using ProductManagement.Presentation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagement.Presentation.Controllers.v1
 {
-    public class CartController: CustomBaseController
+    public class CartController : CustomBaseController
     {
         private readonly ICartService _cartService;
         private readonly PriceConstsSetup _price;
@@ -27,9 +28,9 @@ namespace ProductManagement.Presentation.Controllers.v1
                 CMass = _price.CMass,
                 CVol = _price.CVol,
             };
-            
+
         }
-    // Controller actions and methods would go here
+        // Controller actions and methods would go here
 
 
         /// <summary>
@@ -39,11 +40,11 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="constsSetup"></param>
         /// <returns></returns>
         [HttpGet("cart/{userId}")]
-        public async Task<IActionResult> GetCartByUserId(Guid userId , PriceConstsSetup? constsSetup)
+        public async Task<IActionResult> GetCartByUserId(Guid userId, PriceConstsSetup? constsSetup)
         {
             var priceConstsSetup = constsSetup ?? CartController.constsSetup;
 
-            var result = await _cartService.GetCartByUserId(userId , priceConstsSetup);
+            var result = await _cartService.GetCartByUserId(userId, priceConstsSetup);
             if (result.IsError)
             {
                 return Problem(result.Errors);
@@ -58,11 +59,12 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="quantity"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpPost("cart/{cartId}/add/{productId}")]
-        public async Task<IActionResult> AddProductToCart(Guid productId, int quantity, Guid userId, PriceConstsSetup? constsSetup)
+        [HttpPost("cart/{userId}/add/{productId}")]
+        public async Task<IActionResult> AddProductToCart(Guid productId,[FromQuery] int quantity,Guid userId, [FromBody] AddToCartRequest request)
         {
-            var priceConstsSetup = constsSetup ?? CartController.constsSetup;
-            var result = await _cartService.AddProductToCart(productId, quantity, userId , priceConstsSetup);
+            
+            var priceConstsSetup = request.ConstsSetup ?? constsSetup;
+            var result = await _cartService.AddProductToCart(productId, request.CustomAttIds , quantity, userId , priceConstsSetup);
             if (result.IsError)
             {
                 return Problem(result.Errors);
@@ -111,10 +113,10 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// <param name="quantity"></param>
         /// <param name="cartId"></param>
         /// <returns></returns>
-        [HttpPut("cart/{cartId}/update/{productId}")]
-        public async Task<IActionResult> UpdateCart(Guid productId, int quantity, Guid cartId)
+        [HttpPut("cart/update/{cartProductId}")]
+        public async Task<IActionResult> UpdateCart(Guid cartProductId, [FromQuery] List<Guid>? customAttIds, [FromQuery] int quantity)
         {
-            var result = await _cartService.UpdateCart(productId, quantity, cartId);
+            var result = await _cartService.UpdateCart(cartProductId, customAttIds, quantity);
             if (result.IsError)
             {
                 return Problem(result.Errors);
@@ -141,7 +143,24 @@ namespace ProductManagement.Presentation.Controllers.v1
             return Ok(result);
         }
 
-
+        /// <summary>
+        /// method to search product in cart
+        /// </summary>
+        /// <param name="cartId"></param>
+        /// <param name="searchFor"></param>
+        /// <param name="constsSetup"></param>
+        /// <returns></returns>
+        [HttpGet("cart/{cartId}/search")]
+        public async Task<IActionResult> SearchProductInCart(Guid cartId, [FromQuery] string searchFor, PriceConstsSetup? constsSetup)
+        {
+            var priceConstsSetup = constsSetup ?? CartController.constsSetup;
+            var result = await _cartService.SearchProductInCart(cartId, searchFor, priceConstsSetup);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result);
+        }
 
 
     }

@@ -115,10 +115,25 @@ namespace ProductManagement.Infrastructure.DbContexts
 
             modelBuilder.Entity<CartProduct>(entity =>
             {
-                entity.HasKey(cp => new { cp.CartId, cp.ProductId }); // composite PK
+                entity.HasKey(cp => cp.CartProductId); 
 
                 entity.Property(cp => cp.Quantity)
                 .IsRequired();
+
+                entity.HasMany(cp => cp.CartProductCustomAttributes)
+                .WithOne(pa=>pa.CartProduct)
+                .HasForeignKey(pa => pa.CartProductId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            });
+
+            modelBuilder.Entity<CartProductCustomAttribute>(entity =>
+            {
+                entity.HasKey(cpa => new { cpa.ProductCustomAttributeId , cpa.CartProductId});
+
+                entity.HasOne(pa => pa.ProductCustomAttribute)
+                      .WithMany()
+                      .HasForeignKey(pa => pa.ProductCustomAttributeId)
+                      .OnDelete(DeleteBehavior.Restrict); // Prevent cascade from ProductCustomAttribute
             });
 
             modelBuilder.Entity<WhishList>(entity =>

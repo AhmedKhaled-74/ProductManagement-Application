@@ -14,13 +14,20 @@ namespace ProductManagement.Infrastructure.Repos.CartRepos
     {
         private readonly AppDbContext _dbContext = dbContext;
 
-        public async Task<CartProduct> AddProductToCart(Guid ProductId, int Quantity, Guid cartId)
+        public async Task<CartProduct> AddProductToCart(Guid ProductId,  List<Guid>? CustomAttributesIds ,int Quantity, Guid cartId)
         {
+            var cartProductId = Guid.NewGuid();
             var cartProduct = new CartProduct
             {
+                CartProductId = cartProductId,
                 CartId = cartId,
                 ProductId = ProductId,
-                Quantity = Quantity
+                Quantity = Quantity,
+                CartProductCustomAttributes = CustomAttributesIds?.Select(caId => new CartProductCustomAttribute
+                {
+                    CartProductId = cartProductId,
+                    ProductCustomAttributeId = caId
+                }).ToList()
             };
             await _dbContext.CartProducts.AddAsync(cartProduct);
             await _dbContext.SaveChangesAsync();
@@ -53,12 +60,36 @@ namespace ProductManagement.Infrastructure.Repos.CartRepos
             }
         }
 
-        public async Task<CartProduct> UpdateCart(Guid ProductId, int Quantity, Guid cartId)
+        public async Task<CartProduct> UpdateCart(Guid cartProductId, List<Guid>? CustomAttributesIds , int Quantity)
         {
-            var cartProduct = await  _dbContext.CartProducts.FirstOrDefaultAsync(cp => cp.CartId == cartId && cp.ProductId == ProductId);
+            var cartProduct = await  _dbContext.CartProducts.Include(cp=>cp.CartProductCustomAttributes)
+                .FirstOrDefaultAsync(cp => cp.CartProductId == cartProductId);
             if (cartProduct != null)
             {
+            if (CustomAttributesIds != null)
+            {
+                    foreach (var item in CustomAttributesIds)
+                    {
+                        var existsAtt = await _dbContext.ProductCustomAttributes.FirstOrDefaultAsync(ca => ca.ProductCustomAttributeId == item);
+                        if (existsAtt == null || existsAtt.ProductId != cartProduct.ProductId)
+                        {
+                            throw new Exception($"Custom Attribute with ID {item} does not exist.");
+
+                        }
+                    }
+            }
+
                 cartProduct.Quantity = Quantity;
+                // Update custom attributes
+                if (CustomAttributesIds != null)
+                {
+                cartProduct.CartProductCustomAttributes?.Clear();
+                    cartProduct.CartProductCustomAttributes = CustomAttributesIds.Select(caId => new CartProductCustomAttribute
+                    {
+                        CartProductId = cartProductId,
+                        ProductCustomAttributeId = caId
+                    }).ToList();
+                }
                 _dbContext.CartProducts.Update(cartProduct);
                 await _dbContext.SaveChangesAsync();
             }

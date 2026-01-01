@@ -9,6 +9,7 @@ namespace ProductManagement.Presentation.Controllers
     public class ErrorController : ControllerBase
     {
         [Route("/error")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult HandleError() {
         var exeption =  HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
 

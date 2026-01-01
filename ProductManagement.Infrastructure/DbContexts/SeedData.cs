@@ -43,6 +43,7 @@ namespace ProductManagement.Infrastructure.DbContexts
             await context.Brands.AddRangeAsync(brands);
             await context.SaveChangesAsync();
         }
+
         private static async Task SeedVendors(AppDbContext context)
         {
             var vendors = new List<Vendor>
@@ -56,6 +57,7 @@ namespace ProductManagement.Infrastructure.DbContexts
             await context.Vendors.AddRangeAsync(vendors);
             await context.SaveChangesAsync();
         }
+
         private static async Task SeedCategoriesAndSubCategories(AppDbContext context)
         {
             var categories = new List<Category>
@@ -274,6 +276,7 @@ namespace ProductManagement.Infrastructure.DbContexts
             await context.Regions.AddRangeAsync(regions);
             await context.SaveChangesAsync();
         }
+
         private static async Task SeedProductCustomAttributes(AppDbContext context)
         {
             var products = await context.Products.ToListAsync();
