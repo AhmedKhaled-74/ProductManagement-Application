@@ -37,7 +37,7 @@ namespace ProductManagement.Application.Handlers.QueriesHandlers.ProductQueriesH
                 size = _pagination.AdminPageSize ?? 100;
             }
             else
-                size = _pagination.UserPageSize ?? 10;
+                size = _pagination.UserPageSize ?? 12;
 
             var priceConsts = new PriceConstsSetup
             {
@@ -55,7 +55,10 @@ namespace ProductManagement.Application.Handlers.QueriesHandlers.ProductQueriesH
                 "Rate" => p => p.TotalStars / (p.TotalRatedUsers * 5.0) * 5.0,
                 "Popular" => p => p.SoldTimes,
                 "BestSelling" => p => p.SoldTimes,
-                "Price" => Expression.Lambda<Func<Product, object>>(
+                "PriceHighLow" => Expression.Lambda<Func<Product, object>>(
+                  Expression.Convert(priceExpr.Body, typeof(object)),
+                  priceExpr.Parameters),
+                "PriceLowHigh" => Expression.Lambda<Func<Product, object>>(
                   Expression.Convert(priceExpr.Body, typeof(object)),
                   priceExpr.Parameters),
                 "Category" => p => p.ProductCategoryId,
@@ -103,6 +106,7 @@ namespace ProductManagement.Application.Handlers.QueriesHandlers.ProductQueriesH
             var products = await _productGetterRepo.GetFilteredProductsWithPaginationAsync(
                 filter,
                 orderBy,
+                request.orderBy == "PriceLowHigh" ? false : true,
                 page,
                 size);
 

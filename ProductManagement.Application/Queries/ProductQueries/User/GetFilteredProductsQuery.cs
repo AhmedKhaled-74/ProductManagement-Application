@@ -10,6 +10,7 @@ namespace ProductManagement.Application.Queries.ProductQueries.User
         decimal? minPrice,
         decimal? maxPrice,
         string? role,
+        bool? isDescending = true,
         int? pageNum = 1,
         decimal? poeRegion = 1.05m,
         decimal? cTax = 1.12m) : IRequest<ErrorOr<ProductsListResult<ProductResult>>>;

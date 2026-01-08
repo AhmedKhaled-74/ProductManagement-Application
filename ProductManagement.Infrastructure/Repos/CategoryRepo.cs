@@ -33,7 +33,22 @@ namespace ProductManagement.Infrastructure.Repos
             return await _dbContext.Categories
                 .AnyAsync(c => c.CategoryId == categoryId);
         }
-
+        public async Task<Category?> GetCategoryById(Guid categoryId)
+        {
+            return await _dbContext.Categories
+                .Include(c => c.SubCategories)
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+        }
+        public async Task DeleteCategory(Guid categoryId)
+        {
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+            if (category != null)
+            {
+                _dbContext.Categories.Remove(category);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
         public async Task<bool> DoesSubCategoryExistAsync(Guid subCategoryId)
         {
             return await _dbContext.SubCategories

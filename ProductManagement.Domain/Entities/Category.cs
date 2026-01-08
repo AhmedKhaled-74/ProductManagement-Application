@@ -7,6 +7,8 @@ namespace ProductManagement.Domain.Entities
         [Key]
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; } = null!;
+        public string CategoryDescription { get; set; } = null!;
+        public string CategoryImageUrl { get; set; } = null!;
 
         // navigation props
         public virtual ICollection<SubCategory>? SubCategories { get; set; }

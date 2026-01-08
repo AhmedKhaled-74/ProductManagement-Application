@@ -15,7 +15,8 @@ namespace ProductManagement.Infrastructure.Repos.WishListRepos
         private readonly AppDbContext _dbContext = dbContext;
         public async Task<WhishList?> GetWishListByUserIdAsync(Guid userId)
         {
-            var wishList = await _dbContext.WhishLists
+            var wishList = await _dbContext.WhishLists.Include(wishList => wishList.WhishListProducts!)
+                .ThenInclude(wlp => wlp.Product).ThenInclude(p => p.ProductMedias)
                 .FirstOrDefaultAsync(wl => wl.UserId == userId);
             return wishList;
         }

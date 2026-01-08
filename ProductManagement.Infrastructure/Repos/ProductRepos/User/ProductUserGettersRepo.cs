@@ -16,7 +16,7 @@ namespace ProductManagement.Infrastructure.Repos.ProductRepos.User
        
         public async Task<List<Product>> GetFilteredProductsWithPaginationAsync(
                 Expression<Func<Product, bool>>? filter,
-                Expression<Func<Product, object>> orderBy,
+                Expression<Func<Product, object>> orderBy, bool isDescending,
                 int pageNum,
                 int pageSize)
         {
@@ -32,7 +32,14 @@ namespace ProductManagement.Infrastructure.Repos.ProductRepos.User
             {
                 query = query.Where(filter);
             }
-
+            if (!isDescending)
+            {
+                return await query
+                .OrderBy(orderBy)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            }
             return await query
                 .OrderByDescending(orderBy)
                 .Skip((pageNum - 1) * pageSize)
@@ -99,6 +106,21 @@ namespace ProductManagement.Infrastructure.Repos.ProductRepos.User
             query = query.Where(p => p.Discount > 0.15m);
             return await query.OrderByDescending(p => p.Discount)
                 .Take(5)
+                .ToListAsync();
+        }
+        public async Task<List<Product>> GetTrendsProductsAsync()
+        {
+            var query = _dbContext.Products
+                .Include(p => p.ProductCategory)
+                .Include(p => p.ProductSubCategory)
+                .Include(p => p.ProductBrand)
+                .Include(p => p.Vendor)
+                .Include(p => p.ProductMedias)
+                .Where(p => p.TotalRatedUsers > 0 &&
+                   (decimal)p.TotalStars / p.TotalRatedUsers >= 4.8m)
+                .AsQueryable();
+            return await query.OrderByDescending(p => p.SoldTimes)
+                .Take(10)
                 .ToListAsync();
         }
     }

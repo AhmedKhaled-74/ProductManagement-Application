@@ -48,14 +48,7 @@ namespace ProductManagement.Infrastructure.Repos.WishListRepos
                 _dbContext.WhishListProducts.Remove(wishListProduct);
                 await _dbContext.SaveChangesAsync();
             }
-            var wishList = await _dbContext.WhishLists
-                .Include(wl => wl.WhishListProducts)
-                .FirstOrDefaultAsync(wl => wl.UserId == userId);
-            if (wishList != null && (wishList.WhishListProducts == null || !wishList.WhishListProducts.Any()))
-            {
-                _dbContext.WhishLists.Remove(wishList);
-                await _dbContext.SaveChangesAsync();
-            }
+           
         }
 
         public async Task ClearWishList(Guid wishListId)

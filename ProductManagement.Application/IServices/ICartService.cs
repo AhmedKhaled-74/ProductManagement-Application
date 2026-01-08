@@ -12,7 +12,7 @@ namespace ProductManagement.Application.IServices
 {
     public interface ICartService
     {
-        Task<ErrorOr<CartProductDTO>> AddProductToCart(Guid? ProductId, List<Guid>? customAttIds, int? Quantity,Guid? userId, PriceConstsSetup? priceConstsSetup);
+        Task<ErrorOr<Success>> AddProductToCart(Guid? ProductId, List<Guid>? customAttIds, int? Quantity,Guid? userId, PriceConstsSetup? priceConstsSetup);
         Task<ErrorOr<Success>> UpdateCart(Guid? CartProductId, List<Guid>? CustomAttributesIds, int? Quantity);
         Task<ErrorOr<List<CartProductDTO>>> SearchProductInCart(Guid? cartId, string? searchFor, PriceConstsSetup? priceConstsSetup);
         Task<ErrorOr<Success>> RemoveProductFromCart(Guid? ProductId, Guid? cartId);

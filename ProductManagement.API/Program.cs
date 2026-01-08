@@ -1,12 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using ProductManagement.Application.Helpers;
-using ProductManagement.Application.IServices;
-using ProductManagement.Application.RepoContracts;
-using ProductManagement.Application.RepoContracts.IProductRepos;
-using ProductManagement.Application.Services;
 using ProductManagement.Infrastructure.DbContexts;
 using ProductManagement.Infrastructure.Repos;
-using ProductManagement.Infrastructure.Repos.ProductRepos;
 using ProductManagement.Presentation;
 using Scalar.AspNetCore;
 

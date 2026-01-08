@@ -49,7 +49,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             {
                 return Problem(result.Errors);
             }
-            return Ok(result);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             {
                 return Problem(result.Errors);
             }
-            return Ok(result);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             {
                 return Problem(result.Errors);
             }
-            return Ok(result);
+            return Ok(result.Value);
         }
 
 

@@ -37,7 +37,7 @@ namespace ProductManagement.Application.Handlers.QueriesHandlers.ProductQueriesH
                 size = _pagination.AdminPageSize ?? 100;
             }
             else
-                size = _pagination.UserPageSize ?? 10;
+                size = _pagination.UserPageSize ?? 12;
 
             var priceConsts = new PriceConstsSetup
             {

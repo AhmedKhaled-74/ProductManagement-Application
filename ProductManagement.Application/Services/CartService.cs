@@ -18,7 +18,7 @@ namespace ProductManagement.Application.Services
         private readonly ICartGettersRepo _cartGettersRepo = cartGettersRepo;
         private readonly ICartSettersRepo _cartSettersRepo = cartSettersRepo;
 
-        public async Task<ErrorOr<CartProductDTO>> AddProductToCart(Guid? ProductId, List<Guid>? customAttIds,int? Quantity, Guid? userId , PriceConstsSetup? priceConstsSetup)
+        public async Task<ErrorOr<Success>> AddProductToCart(Guid? ProductId, List<Guid>? customAttIds,int? Quantity, Guid? userId , PriceConstsSetup? priceConstsSetup)
         {
             if (ProductId is null || userId is null || priceConstsSetup is null || Quantity is null)
             {
@@ -34,13 +34,8 @@ namespace ProductManagement.Application.Services
             {
                 return Errors.Errors.CartErrors.CartNotFound;
             }
-            var result = await  _cartSettersRepo.AddProductToCart(ProductId.Value, customAttIds, Quantity.Value, cart.CartId);
-            if (result is null)
-            {
-                return Errors.Errors.CartErrors.FailedToAddProductToCart;
-            }
-            return result.ToCartProductDTO(priceConstsSetup);
-
+            await _cartSettersRepo.AddProductToCart(ProductId.Value, customAttIds, Quantity.Value, cart.CartId);
+            return Result.Success;
         }
 
         public async Task<ErrorOr<Success>> ClearCart(Guid? cartId)

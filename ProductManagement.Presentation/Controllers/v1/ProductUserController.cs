@@ -36,6 +36,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         [HttpGet("filtered")]
         public async Task<IActionResult> GetFilteredProducts(
             [FromQuery] string? orderBy,
+            [FromQuery] bool? isDescending,
             [FromQuery] string? filter,
             [FromQuery] decimal? minPrice,
             [FromQuery] decimal? maxPrice,
@@ -54,6 +55,7 @@ namespace ProductManagement.Presentation.Controllers.v1
                 minPrice,
                 maxPrice,
                 role,
+                isDescending,
                 pageNum,
                 regionProps.Value.PoeRegion,
                 regionProps.Value.ConstTax
@@ -65,6 +67,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             }
             return Ok(result.Value);
         }
+
         /// <summary>
         /// Get searched products by text
         /// </summary>
@@ -90,12 +93,13 @@ namespace ProductManagement.Presentation.Controllers.v1
             var result = await _mediator.Send(query);
             return Ok(result);
         }
+
         /// <summary>
         /// Get product details by Id
         /// </summary>
-        [HttpGet("{id:guid}")]
+        [HttpGet("{productId:guid}")]
         public async Task<IActionResult> GetProductById(
-            Guid id,
+            [Required]Guid productId,
             [FromQuery] string? region)
         {
             var regionProps = await _regionService.GetRegionPropsByNameAsync(region);
@@ -103,7 +107,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             {
                 return Problem(regionProps.Errors);
             }
-            var query = new GetProductByIdQuery(id, regionProps.Value.PoeRegion, regionProps.Value.ConstTax);
+            var query = new GetProductByIdQuery(productId, regionProps.Value.PoeRegion, regionProps.Value.ConstTax);
             var result = await _mediator.Send(query);
             if (result.IsError)
             {
@@ -111,6 +115,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             }
             return Ok(result.Value);
         }
+
         /// <summary>
         /// Add a product review
         /// </summary>
@@ -123,6 +128,7 @@ namespace ProductManagement.Presentation.Controllers.v1
                 return Problem(result.Errors);
             return Ok(result.Value);
         }
+
         /// <summary>
         /// Delete a product review
         /// </summary>
@@ -135,6 +141,7 @@ namespace ProductManagement.Presentation.Controllers.v1
                 return Problem(result.Errors);
             return Ok(result.Value);
         }
+
         /// <summary>
         /// Get a user's review for a specific product
         /// </summary>
@@ -147,6 +154,7 @@ namespace ProductManagement.Presentation.Controllers.v1
                 return Problem(result.Errors);
             return Ok(result.Value);
         }
+
 
         /// <summary>
         /// Search products for a user
@@ -174,6 +182,7 @@ namespace ProductManagement.Presentation.Controllers.v1
             return Ok(result.Value);
         }
 
+
         /// <summary>
         /// Get products with offers
         /// </summary>
@@ -193,6 +202,29 @@ namespace ProductManagement.Presentation.Controllers.v1
             return Ok(result.Value);
         }
 
+
+        /// <summary>
+        /// method to get trended products
+        /// </summary>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        [HttpGet("trends")]
+        public async Task<IActionResult> GetTrendedProducts([FromQuery] string? region)
+        {
+            var regionProps = await _regionService.GetRegionPropsByNameAsync(region);
+            if (regionProps.IsError)
+                return Problem(regionProps.Errors);
+            var query = new GetTrendsProductsQuery(
+                regionProps.Value.PoeRegion,
+                regionProps.Value.ConstTax
+            );
+            var result = await _mediator.Send(query);
+            if (result.IsError)
+                return Problem(result.Errors);
+            return Ok(result.Value);
+        }
+
+
         /// <summary>
         /// Update a product review
         /// </summary>
@@ -201,6 +233,21 @@ namespace ProductManagement.Presentation.Controllers.v1
         {
             var command = new UpdateProductReviewCommand(updateRequest);
             var result = await _mediator.Send(command);
+            if (result.IsError)
+                return Problem(result.Errors);
+            return Ok(result.Value);
+        }
+
+
+        /// <summary>
+        /// method to get all product categories
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("all-categories")]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var query = new GetAllCategoriesQuery();
+            var result = await _mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);
             return Ok(result.Value);

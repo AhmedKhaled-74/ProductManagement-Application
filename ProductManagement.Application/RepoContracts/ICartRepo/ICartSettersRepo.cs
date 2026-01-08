@@ -13,7 +13,7 @@ namespace ProductManagement.Application.RepoContracts.ICartRepo
     public interface ICartSettersRepo
     {
         Task CreateCart(Guid userId);
-        Task<CartProduct> AddProductToCart(Guid ProductId, List<Guid>? CustomAttributesIds ,int Quantity, Guid cartId);
+        Task AddProductToCart(Guid ProductId, List<Guid>? CustomAttributesIds ,int Quantity, Guid cartId);
         Task<CartProduct> UpdateCart(Guid cartProductId, List<Guid>? CustomAttributesIds  ,int Quantity);
         Task RemoveProductFromCart(Guid ProductId, Guid cartId);
         Task ClearCart(Guid cartId);        

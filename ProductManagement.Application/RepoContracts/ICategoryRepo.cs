@@ -11,6 +11,8 @@ namespace ProductManagement.Application.RepoContracts
     {
         public Task CreateCategory(Category category);
         public Task<IEnumerable<Category>> GetAllCategories();
+        public Task<Category?> GetCategoryById(Guid categoryId);
+        public Task DeleteCategory(Guid categoryId);
         Task<bool> DoesCategoryExistAsync(Guid categoryId);
         Task<bool> DoesSubCategoryExistAsync(Guid subCategoryId);
     }
