@@ -19,4 +19,14 @@ namespace ProductManagement.Application.DTOs.ProductDTOs.AddRequest
         [MaxLength(500)]
         public string ProductMediaURL { get; set; } = null!;
     }
+    public class ProductMediaAddRequestByAddProduct
+    {
+        [Required]
+        public string Type { get; set; } = null!;
+
+        [Url]
+        [Required]
+        [MaxLength(500)]
+        public string ProductMediaURL { get; set; } = null!;
+    }
 }

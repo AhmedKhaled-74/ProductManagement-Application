@@ -65,7 +65,7 @@ namespace ProductManagement.Application.Errors
                 description: "RegionId is Required"
                 );
             public static Error RegionObjectRequired => Error.Validation(code: "Region.ObjectRequired",
-                 description: "Object is Required"
+                 description: "Region Object is Required"
                 );
             public static Error DuplicatedRegion => Error.Conflict(code: "Region.Duplicated",
                 description: "Region with this Name is aleardy exsist"

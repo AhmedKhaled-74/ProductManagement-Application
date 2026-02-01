@@ -74,6 +74,9 @@ namespace ProductManagement.Application.Mappers
         public static ProductMedia ToProductMediaEntity(
             this ProductMediaAddRequest request, Guid productId)
             => ToEntityInternal<ProductMediaAddRequest, ProductMedia>(request, productId);
+        public static ProductMedia ToProductMediaEntity(
+            this ProductMediaAddRequestByAddProduct request, Guid productId)
+            => ToEntityInternal<ProductMediaAddRequestByAddProduct, ProductMedia>(request, productId);
 
         public static ProductMedia ToProductMediaEntity(
             this ProductMediaUpdateRequest request, Guid productId)

@@ -6,6 +6,7 @@ using ProductManagement.Application.HttpClients;
 using ProductManagement.Application.Mappers;
 using ProductManagement.Application.RepoContracts.IProductRepos.Common;
 using ProductManagement.Application.RepoContracts.IProductRepos.Vendor;
+using System;
 
 namespace ProductManagement.Application.Handlers.CommandsHandlers.ProductCommandsHandlers.Vendor
 {
@@ -32,12 +33,31 @@ namespace ProductManagement.Application.Handlers.CommandsHandlers.ProductCommand
             if (vendorError != null)
                 return vendorError.Value;
 
+            // Get the old type before updating
+            var oldType = attribute.Type;
+            var newType = request.productCustomAttributeUpdateRequest.Type;
 
+            // Check if the type has changed
+            if (!oldType.Equals(newType, StringComparison.OrdinalIgnoreCase))
+            {
+                // Update all custom attributes with the same old type to the new type
+                await _productSetterRepo.UpdateAllCustomAttributesByTypeAsync(
+                    product.ProductId, 
+                    oldType, 
+                    newType);
+            }
+
+            // Update the specific attribute (this will also update the Attribute value if it changed)
             await _productSetterRepo
                 .UpdateProductCustomAttributeAsync(
                 request.productCustomAttributeUpdateRequest.ProductCustomAttributeId,
                 request.productCustomAttributeUpdateRequest
                 .ToProductCustomAttributeEntity(request.productCustomAttributeUpdateRequest.ProductId));
+
+            // TODO: Handle stock updates when type changes
+            // If type changed, remove old stocks and create new stocks for all combinations
+            // This will be implemented when Stock entity is ready
+
             return Unit.Value;
         }
     }

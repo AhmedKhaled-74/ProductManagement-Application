@@ -11,6 +11,7 @@ namespace ProductManagement.Application.RepoContracts.IProductRepos.Vendor
 
         Task AddProductCustomAttributeAsync(ProductCustomAttribute attributeRequest);
         Task UpdateProductCustomAttributeAsync(Guid attributeId, ProductCustomAttribute attributeRequest);
+        Task UpdateAllCustomAttributesByTypeAsync(Guid productId, string oldType, string newType);
 
         Task<bool> IsVendorAccessBrand(Guid vendorId, Guid brandId);
         Task<bool> IsVendorExsist(Guid vendorId);

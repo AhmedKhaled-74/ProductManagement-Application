@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductManagement.Application.RepoContracts.IProductRepos.Vendor;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Infrastructure.DbContexts;
+using System;
 
 namespace ProductManagement.Infrastructure.Repos.ProductRepos.Vendor
 {
@@ -103,6 +104,21 @@ namespace ProductManagement.Infrastructure.Repos.ProductRepos.Vendor
 
             existingAttribute.Type = attributeRequest.Type;
             existingAttribute.Attribute = attributeRequest.Attribute;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAllCustomAttributesByTypeAsync(Guid productId, string oldType, string newType)
+        {
+            var attributesToUpdate = await _dbContext.ProductCustomAttributes
+                .Where(pca => pca.ProductId == productId && 
+                             pca.Type.Equals(oldType, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            foreach (var attr in attributesToUpdate)
+            {
+                attr.Type = newType;
+            }
 
             await _dbContext.SaveChangesAsync();
         }

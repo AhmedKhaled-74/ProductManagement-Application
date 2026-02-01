@@ -49,6 +49,8 @@ namespace ProductManagement.Application.Handlers.CommandsHandlers.ProductCommand
             await _productSetterRepo
                 .UpdateProductAsync(request.productUpdateRequest.ProductId, 
                 request.productUpdateRequest.ToProductEntity(request.productUpdateRequest.ProductId));
+
+            // TODO: update stock for productname change
             return Unit.Value;
         }
     }

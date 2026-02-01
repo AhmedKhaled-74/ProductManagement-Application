@@ -6,9 +6,13 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var logger = LoggerFactory.Create(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+}).CreateLogger("ProductManagementAPI");
 
 builder.Services.AddPresentation()
-                .AddApplication(builder.Configuration)
+                .AddApplication(builder.Configuration, logger)
                 .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();

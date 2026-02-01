@@ -10,6 +10,7 @@ namespace ProductManagement.Presentation
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
+            services.AddExceptionHandler(ex => ex.AllowStatusCode404Response = true);
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>

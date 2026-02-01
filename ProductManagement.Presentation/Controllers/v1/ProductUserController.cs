@@ -1,19 +1,18 @@
 ﻿using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using ProductManagement.Application.Commands.ProductCommands.User;
+using ProductManagement.Application.DTOs.CategoryDTOs;
+using ProductManagement.Application.DTOs.ProductDTOs;
 using ProductManagement.Application.DTOs.ProductDTOs.AddRequest;
+using ProductManagement.Application.DTOs.ProductDTOs.Result;
 using ProductManagement.Application.DTOs.ProductDTOs.UpdateRequest;
 using ProductManagement.Application.IServices;
 using ProductManagement.Application.Queries.ProductQueries.Common;
 using ProductManagement.Application.Queries.ProductQueries.User;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace ProductManagement.Presentation.Controllers.v1
 {
@@ -23,11 +22,13 @@ namespace ProductManagement.Presentation.Controllers.v1
     {
         private readonly ISender _mediator;
         private readonly IRegionService _regionService;
+        private readonly IDistributedCache _distributedCache;
 
-        public ProductUserController(ISender mediator, IRegionService regionService)
+        public ProductUserController(ISender mediator, IRegionService regionService, IDistributedCache distributedCache)
         {
             _mediator = mediator;
             _regionService = regionService;
+            _distributedCache = distributedCache;
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace ProductManagement.Presentation.Controllers.v1
         /// </summary>
         [HttpGet("{productId:guid}")]
         public async Task<IActionResult> GetProductById(
-            [Required]Guid productId,
+            [Required] Guid productId,
             [FromQuery] string? region)
         {
             var regionProps = await _regionService.GetRegionPropsByNameAsync(region);
@@ -189,6 +190,22 @@ namespace ProductManagement.Presentation.Controllers.v1
         [HttpGet("offers")]
         public async Task<IActionResult> GetOffersProducts([FromQuery] string? region)
         {
+
+            if (region == null)
+                region = "Egypt";
+            string cacheKey = $"products_offers:{region.ToLower()}";
+
+            string? cachedProducts = await _distributedCache.GetStringAsync(cacheKey);
+            if (cachedProducts != null)
+            {
+
+                var res = JsonSerializer.Deserialize<ProductsListResult<ProductResult>>(
+                    cachedProducts,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+                return Ok(res);
+            }
+
             var regionProps = await _regionService.GetRegionPropsByNameAsync(region);
             if (regionProps.IsError)
                 return Problem(regionProps.Errors);
@@ -199,6 +216,14 @@ namespace ProductManagement.Presentation.Controllers.v1
             var result = await _mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);
+
+            string productsJson = JsonSerializer.Serialize(result.Value);
+            var cacheOptions = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
+                .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+
+            await _distributedCache.SetStringAsync(cacheKey, productsJson, cacheOptions);
+
             return Ok(result.Value);
         }
 
@@ -211,16 +236,45 @@ namespace ProductManagement.Presentation.Controllers.v1
         [HttpGet("trends")]
         public async Task<IActionResult> GetTrendedProducts([FromQuery] string? region)
         {
+            if (region == null)
+                region = "Egypt";
+
+            string cacheKey = $"products_trends:{region.ToLower()}";
+
+            // Try to get from cache (circuit breaker will handle failures)
+            string? cachedProducts = await _distributedCache.GetStringAsync(cacheKey);
+
+            if (cachedProducts != null)
+            {
+                var res = JsonSerializer.Deserialize<ProductsListResult<ProductResult>>(
+                    cachedProducts,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+                return Ok(res);
+            }
+
+            // Cache miss or circuit open - get from database
             var regionProps = await _regionService.GetRegionPropsByNameAsync(region);
             if (regionProps.IsError)
                 return Problem(regionProps.Errors);
+
             var query = new GetTrendsProductsQuery(
                 regionProps.Value.PoeRegion,
                 regionProps.Value.ConstTax
             );
+
             var result = await _mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);
+
+            // Try to cache (will fail silently if circuit is open)
+            string productsJson = JsonSerializer.Serialize(result.Value);
+            var cacheOptions = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
+                .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+
+            await _distributedCache.SetStringAsync(cacheKey, productsJson, cacheOptions);
+
             return Ok(result.Value);
         }
 
@@ -246,10 +300,27 @@ namespace ProductManagement.Presentation.Controllers.v1
         [HttpGet("all-categories")]
         public async Task<IActionResult> GetAllCategories()
         {
+
+            string cacheKey = $"products_categories";
+
+            string? cachedCategories = await _distributedCache.GetStringAsync(cacheKey);
+
+            if (cachedCategories != null)
+            {
+                var res = JsonSerializer.Deserialize<List<CategoryResultDTO>>(cachedCategories);
+                return Ok(res);
+            }
             var query = new GetAllCategoriesQuery();
             var result = await _mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);
+            string categoriesJson = JsonSerializer.Serialize(result.Value);
+            var cacheOptions = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
+                .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+
+            await _distributedCache.SetStringAsync(cacheKey, categoriesJson, cacheOptions);
+
             return Ok(result.Value);
         }
     }

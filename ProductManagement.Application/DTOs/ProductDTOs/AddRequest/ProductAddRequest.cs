@@ -20,6 +20,7 @@ namespace ProductManagement.Application.DTOs.ProductDTOs.AddRequest
         public decimal ProductVolume { get; set; }
         [Required]
         public decimal ProductPrice { get; set; }
+        [Range(0, 100)]
         public decimal? Discount { get; set; } = 0;
         [Required]
         public Guid VendorId { get; set; }
@@ -30,7 +31,7 @@ namespace ProductManagement.Application.DTOs.ProductDTOs.AddRequest
         [Required]
         public int NumberOfAddingProducts { get; set; }
         [Required]
-        public List<ProductMediaAddRequest> ProductMediaAddRequests { get; set; } = new List<ProductMediaAddRequest>();
+        public List<ProductMediaAddRequestByAddProduct> ProductMediaAddRequests { get; set; } = new List<ProductMediaAddRequestByAddProduct>();
         public List<ProductCustomAttributeAddRequest>? ProductCustomAttributeAddRequests { get; set; }
     }
 }
